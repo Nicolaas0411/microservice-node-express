@@ -56,7 +56,7 @@ TYPEORM_CONNECTION=postgres
 TYPEORM_HOST=localhost
 TYPEORM_PORT=5432
 TYPEORM_USERNAME=postgres
-TYPEORM_PASSWORD=docker
+TYPEORM_PASSWORD=password
 TYPEORM_DATABASE=postgres
 TYPEORM_SYNCHRONIZE=false
 TYPEORM_LOGGING=error
@@ -94,6 +94,78 @@ yarn start serve
 ```
 ![divider](./src/public/divider.png)
 ## ❯ Run using docker-compose
+
+docker-compose.yml (MySQL)
+
+```yml
+version: '3.6'
+services:
+    mysql:
+        container_name: mysql-docker
+        image: mysql
+        ports:
+            - '3306:3306'
+        restart: always
+        logging:
+            driver: 'json-file'
+            options:
+                max-size: '1m'
+                max-file: '1'
+        environment:
+            - MYSQL_ROOT_PASSWORD=password
+            - MYSQL_DATABASE=mysql-ms
+            - MYSQL_USER=root
+            - MYSQL_PASSWORD=password
+        volumes:
+            - $HOME/docker/volumes/mysql-ms:/var/lib/mysql
+        command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--default-authentication-plugin=mysql_native_password']
+```
+
+docker-compose.yml (Postgres)
+
+```yml
+version: '3.6'
+services:
+    postgres:
+            container_name: pg-docker
+            image: postgres
+            ports:
+                - '5432:5432'
+            restart: always
+            logging:
+                driver: 'json-file'
+                options:
+                    max-size: '1m'
+                    max-file: '1'
+            environment:
+                - POSTGRES_PASSWORD=password
+                - POSTGRES_DB=postgres-ms
+            volumes:
+                - $HOME/docker/volumes/postgres-ms:/var/lib/postgresql/data
+```
+
+docker-compose.yml (Microservice)
+
+```yml
+version: '3.6'
+services:
+    microservice-node:
+            container_name: microservice-node-express
+            image: sqn-microservice:latest
+            ports:
+                - '3000:3000'
+            restart: always
+            logging:
+                driver: 'json-file'
+                options:
+                    max-size: '1m'
+                    max-file: '1'
+            environment:
+                - TYPEORM_HOST=postgres
+                - TYPEORM_DATABASE=postgres-ms
+            links:
+                - postgres
+```
 
 Build the image locally
 
