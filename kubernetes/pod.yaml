@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+    name: node-express
+    labels:
+        app: node-express-ms
+spec:
+    containers:
+    - name: nic-microservice 
+      image: nic-microservice
+      env:
+            - name: TYPEORM_USERNAME
+              value: gitlab
+            - name: TYPEORM_DATABASE
+              value: gitlabhq_production
+            - name: TYPEORM_PASSWORD
+              value: gitlab
