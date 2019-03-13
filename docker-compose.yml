@@ -12,13 +12,13 @@ services:
                 max-size: '1m'
                 max-file: '1'
         environment:
-            - POSTGRES_PASSWORD=sqn-microservice
+            - POSTGRES_PASSWORD=password
             - POSTGRES_DB=postgres-ms
         volumes:
             - $HOME/docker/volumes/postgres-ms:/var/lib/postgresql/data
     microservice-node:
         container_name: microservice-node-express
-        image: sqn-microservice:latest
+        image: 04110000/spn-microservice:latest
         ports:
             - '3000:3000'
         restart: always
@@ -30,5 +30,9 @@ services:
         environment:
             - TYPEORM_HOST=postgres
             - TYPEORM_DATABASE=postgres-ms
+            - TYPEORM_PORT=5432
+            - TYPEORM_CONNECTION=postgres
+            - TYPEORM_PASSWORD=docker
+            - TYPEORM_USERNAME=postgres
         links:
             - postgres

@@ -1,0 +1,135 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sqn-microservice-mysql
+  labels:
+    app: sqn-microservice
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: sqn-microservice
+    tier: mysql
+  clusterIP: None
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+  labels:
+    app: sqn-microservice
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: sqn-microservice-mysql
+  labels:
+    app: sqn-microservice
+spec:
+  selector:
+    matchLabels:
+      app: sqn-microservice
+      tier: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: sqn-microservice
+        tier: mysql
+    spec:
+      containers:
+      - image: mysql:5.6
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sqn-microservice
+  labels:
+    app: sqn-microservice
+spec:
+  ports:
+    - port: 3000
+  selector:
+    app: sqn-microservice
+    tier: backend
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wp-pv-claim
+  labels:
+    app: sqn-microservice
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: sqn-microservice
+  labels:
+    app: sqn-microservice
+spec:
+  selector:
+    matchLabels:
+      app: sqn-microservice
+      tier: backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: sqn-microservice
+        tier: backend
+    spec:
+      containers:
+      - image: 04110000/spn-microservice:latest
+        name: sqn-microservice
+        env:
+        - name: TYPEORM_HOST
+          value: sqn-microservice-mysql
+        - name: TYPEORM_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        - name: TYPEORM_DATABASE
+          value: mysql
+        ports:
+        - containerPort: 3000
+          name: sqn-ms
+        volumeMounts:
+        - name: sqn-microservice-persistent-storage
+          mountPath: /var/www/html
+      volumes:
+      - name: sqn-microservice-persistent-storage
+        persistentVolumeClaim:
+          claimName: wp-pv-claim

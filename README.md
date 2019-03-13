@@ -13,6 +13,7 @@
 - [Debugger in VSCode](#-debugger-in-vscode)
 - [API Routes](#-api-routes)
 - [Project Structure](#-project-structure)
+- [Kubernetes](#-kubernetes)
 - [License](#-license)
 
 ![divider](./src/public/divider.png)
@@ -284,6 +285,23 @@ The swagger and the monitor route can be altered in the `.env` file.
 | .env.example                      | Environment configurations |
 | .env.test                         | Test environment configurations |
 | mydb.sql                          | SQLite database for integration tests. Ignored by git and only available after integration tests |
+
+![divider](./src/public/divider.png)
+
+## ❯ Kubernetes
+
+First we need to create a secret object using the following command:
+
+```bash
+kubectl create secret generic mysql-pass --from-literal=password=YOUR_PASSWORD
+```
+(Replace 'YOUR_PASSWORD' with something else)
+
+Next we run the deployment.yaml. This will orchestrate MySQL db as well as the node express microservice.  
+
+```bash
+kubectl create -f deployment.yaml
+```
 
 ![divider](./src/public/divider.png)
 
