@@ -56,7 +56,7 @@ const run = async () => {
 
   // Get database connection and pass it to the seeder
   try {
-    const connection = await loadConnection();
+    const connection = await loadConnection('');
     setConnection(connection);
   } catch (error) {
     return handleError(error);
