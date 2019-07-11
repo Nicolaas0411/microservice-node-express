@@ -9,7 +9,6 @@ import { expressLoader } from './loaders/expressLoader';
 import { graphqlLoader } from './loaders/graphqlLoader';
 import { homeLoader } from './loaders/homeLoader';
 import { iocLoader } from './loaders/iocLoader';
-import { monitorLoader } from './loaders/monitorLoader';
 import { publicLoader } from './loaders/publicLoader';
 import { swaggerLoader } from './loaders/swaggerLoader';
 import { typeormLoader } from './loaders/typeormLoader';
@@ -29,7 +28,6 @@ bootstrapMicroframework({
         typeormLoader,
         expressLoader,
         swaggerLoader,
-        monitorLoader,
         homeLoader,
         publicLoader,
         graphqlLoader,

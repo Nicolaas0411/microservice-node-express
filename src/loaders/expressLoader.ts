@@ -1,10 +1,11 @@
 import { Application } from 'express';
 import { MicroframeworkLoader, MicroframeworkSettings } from 'microframework-w3tec';
-import { createExpressServer } from 'routing-controllers';
-
-// import { authorizationChecker } from '../auth/authorizationChecker';
-// import { currentUserChecker } from '../auth/currentUserChecker';
+import { createExpressServer, getMetadataArgsStorage } from 'routing-controllers';
+import { routingControllersToSpec } from 'routing-controllers-openapi';
 import { env } from '../env';
+import * as path from 'path';
+import * as fs from 'fs';
+import deepEqual from 'deep-equal';
 
 export const expressLoader: MicroframeworkLoader = (settings: MicroframeworkSettings | undefined) => {
     if (settings) {
@@ -42,5 +43,32 @@ export const expressLoader: MicroframeworkLoader = (settings: MicroframeworkSett
 
         // Here we can set the data for other loaders
         settings.setData('express_app', expressApp);
+
+        const routingControllersOptions = {
+            controllers: env.app.dirs.controllers,
+        };
+
+        // Parse routing-controllers classes into OpenAPI spec:
+        const storage = getMetadataArgsStorage();
+        const spec = routingControllersToSpec(storage, routingControllersOptions, {
+            info: {
+                title: 'SQN Microservice Boilerplate',
+                description: 'Microservice boilerplate.',
+                version: '1.0',
+            },
+        });
+
+        const swaggerFile = path.join(__dirname, '..', env.swagger.file);
+        const swaggerFileObject = JSON.stringify(require(path.join(__dirname, '..', env.swagger.file)));
+        const newSpec = JSON.stringify(spec);
+        if (!deepEqual(swaggerFileObject, newSpec)) {
+            fs.writeFile(swaggerFile, newSpec, 'utf8', (err) => {
+                if (err) {
+                    console.error('ERROR: ' + err);
+                    return;
+                }
+                console.log('File has been created: ' + swaggerFile);
+            });
+        }
     }
 };

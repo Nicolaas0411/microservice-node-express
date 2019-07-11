@@ -9,18 +9,16 @@ export function banner(log: Logger): void {
         log.info(`To shut it down, press <CTRL> + C at any time.`);
         log.info(``);
         log.info('-------------------------------------------------------');
-        log.info(`Environment  : ${env.node}`);
-        log.info(`Version      : ${env.app.version}`);
+        log.info(`Environment   : ${env.node}`);
+        log.info(`Version       : ${env.app.version}`);
         log.info(``);
-        log.info(`API Info     : ${route()}${env.app.routePrefix}`);
+        log.info(`API Info      : ${route()}${env.app.routePrefix}`);
         if (env.graphql.enabled) {
-            log.info(`GraphQL      : ${route()}${env.graphql.route}`);
+            log.info(`GraphQL       : ${route()}${env.graphql.route}`);
         }
         if (env.swagger.enabled) {
-            log.info(`Swagger      : ${route()}${env.swagger.route}`);
-        }
-        if (env.monitor.enabled) {
-            log.info(`Monitor      : ${route()}${env.monitor.route}`);
+            log.info(`Swagger       : ${route()}${env.swagger.route}`);
+            log.info(`Swagger Stats : ${route()}${env.swagger.swaggerStatsRoute}`);
         }
         log.info('-------------------------------------------------------');
         log.info('');
